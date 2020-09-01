@@ -1,3 +1,73 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  background-color: #030303;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#start-button {
+  font-family: "Press Start 2P";
+  font-size: 30px;
+  background-color: #030303;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 80px 0px;
+  cursor: pointer;
+}
+
+#game-board {
+  display: none;
+}
+
 canvas {
-  background-color: black;
+  background-color: #030303;
+}
+
+#score-h1 {
+  color: white;
+  font-family: "Press Start 2P";
+}
+
+#game-over {
+  display: none;
+}
+
+#game-over img {
+  width: 800px;
+}
+
+#gameover-score {
+  color: white;
+  font-family: "Press Start 2P";
+  text-align: center;
+}
+
+#win {
+  display: none;
+}
+
+#win img {
+  width: 800px;
+}
+
+#win-score {
+  color: white;
+  font-family: "Press Start 2P";
+  text-align: center;
 }

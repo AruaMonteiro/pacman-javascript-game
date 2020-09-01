@@ -1,21 +1,22 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-undef */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-useless-return */
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const scoreDisplay = document.getElementById("score");
 
 const squareSide = 20;
+let score = 0;
 
 // 0 - wall
 // 1 - pacdot
 // 2 - empty
 // 3 - powerup
 // 4 - pacman
-// 5 - blinky
-// 6 - pinky
-// 7 - inky
-// 8 - clyde
+// 5 - ghost
 // 9 - ghost lair
 const grid = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -30,10 +31,10 @@ const grid = [
   [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 2, 2, 5, 2, 2, 2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 9, 9, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 9, 7, 6, 8, 9, 9, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 0, 9, 9, 9, 9, 9, 9, 0, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2],
-  [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 9, 9, 9, 9, 9, 9, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 9, 9, 9, 9, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 5, 5, 5, 9, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+  [2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2],
+  [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0],
@@ -58,14 +59,24 @@ class Pacman {
     this.y = 23;
   }
 
+  eatDot() {
+    score += 10;
+  }
+
   moveLeft() {
     const futureX = this.x - 1;
     if (futureX < 0) {
       return;
     }
     if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 9)) {
+      if (grid[this.y][futureX] === 5) {
+        gameOver();
+      }
       grid[this.y][this.x] = 2;
       this.x = futureX;
+      if (grid[this.y][this.x] === 1) {
+        this.eatDot();
+      }
       grid[this.y][this.x] = 4;
     }
   }
@@ -76,8 +87,14 @@ class Pacman {
       return;
     }
     if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 9)) {
+      if (grid[this.y][futureX] === 5) {
+        gameOver();
+      }
       grid[this.y][this.x] = 2;
       this.x = futureX;
+      if (grid[this.y][this.x] === 1) {
+        this.eatDot();
+      }
       grid[this.y][this.x] = 4;
     }
   }
@@ -88,8 +105,14 @@ class Pacman {
       return;
     }
     if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 9)) {
+      if (grid[futureY][this.x] === 5) {
+        gameOver();
+      }
       grid[this.y][this.x] = 2;
       this.y = futureY;
+      if (grid[this.y][this.x] === 1) {
+        this.eatDot();
+      }
       grid[this.y][this.x] = 4;
     }
   }
@@ -100,8 +123,14 @@ class Pacman {
       return;
     }
     if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 9)) {
+      if (grid[futureY][this.x] === 5) {
+        gameOver();
+      }
       grid[this.y][this.x] = 2;
       this.y = futureY;
+      if (grid[this.y][this.x] === 1) {
+        this.eatDot();
+      }
       grid[this.y][this.x] = 4;
     }
   }
@@ -109,7 +138,7 @@ class Pacman {
   draw() {
     ctx.beginPath();
     ctx.arc(this.x * squareSide + 10, this.y * squareSide + 10, 10, 0, Math.PI * 2);
-    ctx.fillStyle = "yellow"; // !
+    ctx.fillStyle = "gold";
     ctx.fill();
     ctx.closePath();
   }
@@ -118,8 +147,8 @@ class Pacman {
 const player = new Pacman();
 
 class Ghost {
-  constructor(className, startX, startY, speed, color) {
-    this.className = className;
+  constructor(ghostName, startX, startY, speed, color, contentOfSquare) {
+    this.ghostName = ghostName;
     this.startX = startX;
     this.startY = startY;
     this.x = startX;
@@ -128,6 +157,111 @@ class Ghost {
     this.isScared = false;
     this.timerId = NaN;
     this.color = color;
+    this.contentOfSquare = contentOfSquare;
+    this.directions = ["l", "r", "u", "d"];
+    this.direction = "u";
+  }
+
+  moveLeft() {
+    const futureX = this.x - 1;
+    if (futureX < 0) {
+      return;
+    }
+    if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 5)) {
+      if (grid[this.y][futureX] === 4) {
+        gameOver();
+      }
+      grid[this.y][this.x] = this.contentOfSquare;
+      this.contentOfSquare = grid[this.y][futureX];
+      this.x = futureX;
+      grid[this.y][this.x] = 5;
+    } else this.direction = this.directions[Math.floor(Math.random() * this.directions.length)];
+  }
+
+  moveRight() {
+    const futureX = this.x + 1;
+    if (futureX >= 28) {
+      return;
+    }
+    if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 5)) {
+      if (grid[this.y][futureX] === 4) {
+        gameOver();
+      }
+      grid[this.y][this.x] = this.contentOfSquare;
+      this.contentOfSquare = grid[this.y][futureX];
+      this.x = futureX;
+      grid[this.y][this.x] = 5;
+    } else this.direction = this.directions[Math.floor(Math.random() * this.directions.length)];
+  }
+
+  moveUp() {
+    const futureY = this.y - 1;
+    if (futureY < 0) {
+      return;
+    }
+    if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 5)) {
+      if (grid[futureY][this.x] === 4) {
+        gameOver();
+      }
+      grid[this.y][this.x] = this.contentOfSquare;
+      this.contentOfSquare = grid[futureY][this.x];
+      this.y = futureY;
+      grid[this.y][this.x] = 5;
+    } else this.direction = this.directions[Math.floor(Math.random() * this.directions.length)];
+  }
+
+  moveDown() {
+    const futureY = this.y + 1;
+    if (futureY >= 31) {
+      return;
+    }
+    if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 5)) {
+      if (grid[futureY][this.x] === 4) {
+        gameOver();
+      }
+      grid[this.y][this.x] = this.contentOfSquare;
+      this.contentOfSquare = grid[futureY][this.x];
+      this.y = futureY;
+      grid[this.y][this.x] = 5;
+    } else this.direction = this.directions[Math.floor(Math.random() * this.directions.length)];
+  }
+
+  move() {
+    // this.direction = this.directions[Math.floor(Math.random() * this.directions.length)];
+
+    this.timerId = setInterval(() => {
+      switch (this.direction) {
+        case "l":
+          this.moveLeft();
+          break;
+
+        case "u":
+          this.moveUp();
+          break;
+
+        case "r":
+          this.moveRight();
+          break;
+
+        case "d":
+          this.moveDown();
+          break;
+
+        default:
+          break;
+      }
+
+      // if the ghost is currently scared
+      if (this.isScared) {
+        // this.turnScared();
+      }
+
+      draw();
+
+      // if the ghost is currently scared and pacman is on it
+
+      // checkForGameOver()
+    }, this.speed);
   }
 
   draw() {
@@ -136,11 +270,11 @@ class Ghost {
   }
 }
 
-ghosts = [
-  new Ghost("blinky", 13, 11, 250, "red"),
-  new Ghost("pinky", 13, 13, 400, "hotpink"),
-  new Ghost("inky", 12, 13, 300, "cyan"),
-  new Ghost("clyde", 14, 13, 500, "sandybrown"),
+const ghosts = [
+  new Ghost("blinky", 13, 11, 170, "red", 2),
+  new Ghost("pinky", 13, 13, 180, "hotpink", 9),
+  new Ghost("inky", 12, 13, 230, "cyan", 9),
+  new Ghost("clyde", 14, 13, 300, "sandybrown", 9),
 ];
 
 function clear() {
@@ -148,7 +282,7 @@ function clear() {
 }
 
 function drawWall(x, y) {
-  ctx.fillStyle = "blue";
+  ctx.fillStyle = "#0F2849";
   ctx.fillRect(x * squareSide, y * squareSide, squareSide, squareSide);
 }
 
@@ -187,50 +321,96 @@ function draw() {
           break;
 
         case 5:
-          ghosts[0].draw();
+          ghosts.forEach((ghost) => ghost.draw());
           break;
 
-        case 6:
-          ghosts[1].draw();
+        default:
           break;
+      }
+      scoreDisplay.innerText = score;
+    }
+  }
+  if (checkWin()) {
+    victory();
+  }
+}
 
-        case 7:
-          ghosts[2].draw();
+function checkWin() {
+  let win = true;
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] === 1) {
+        win = false;
+        return win;
+      }
+    }
+  }
+  return win;
+}
+
+function restart() {
+  document.location.reload(true);
+}
+
+function victory() {
+  ghosts.forEach((ghost) => clearInterval(ghost.timerId));
+  document.getElementById("win-score").innerText = `Your final score is ${score}`;
+  clear();
+  document.getElementById("game-board").style.display = "none";
+  document.getElementById("win").style.display = "block";
+  setTimeout(() => {
+    restart();
+  }, 3000);
+}
+
+function gameOver() {
+  ghosts.forEach((ghost) => clearInterval(ghost.timerId));
+  document.getElementById("gameover-score").innerText = `Your final score is ${score}`;
+  clear();
+  document.getElementById("game-board").style.display = "none";
+  document.getElementById("game-over").style.display = "block";
+
+  setTimeout(() => {
+    restart();
+  }, 3000);
+}
+
+function startGame() {
+  draw();
+  ghosts.forEach((ghost) => ghost.move());
+}
+
+window.onload = () => {
+  document.getElementById("start-button").onclick = () => {
+    // Esconder o titulo e o botao de Start Game
+    document.getElementById("title").style.display = "none";
+
+    // Exibir a game board
+    document.getElementById("game-board").style.display = "block";
+
+    // Iniciar o jogo
+    startGame();
+    document.addEventListener("keydown", (e) => {
+      switch (e.keyCode) {
+        case 37: // left arrow
+          player.moveLeft();
+          draw();
           break;
-
-        case 8:
-          ghosts[3].draw();
+        case 38: // up arrow
+          player.moveUp();
+          draw();
+          break;
+        case 39: // right arrow
+          player.moveRight();
+          draw();
+          break;
+        case 40: // right arrow
+          player.moveDown();
+          draw();
           break;
         default:
           break;
       }
-    }
-  }
-}
-
-window.onload = () => {
-  draw();
-
-  document.addEventListener("keyup", (e) => {
-    switch (e.keyCode) {
-      case 37: // left arrow
-        player.moveLeft();
-        draw();
-        break;
-      case 38: // up arrow
-        player.moveUp();
-        draw();
-        break;
-      case 39: // right arrow
-        player.moveRight();
-        draw();
-        break;
-      case 40: // right arrow
-        player.moveDown();
-        draw();
-        break;
-      default:
-        break;
-    }
-  });
+    });
+  };
 };

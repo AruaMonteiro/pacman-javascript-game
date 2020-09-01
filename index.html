@@ -3,12 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
     <title>Pacman</title>
   </head>
   <body>
-    <canvas id="canvas" width="560" height="620"></canvas>
+    <div class="container">
+      <div id="title">
+        <img src="./images/title.jpg" alt="Pacman Picture" />
+        <br />
+        <button id="start-button">Start Game</button>
+      </div>
 
+      <div id="game-board">
+        <canvas id="canvas" width="560" height="620"></canvas>
+        <h1 id="score-h1">SCORE: <span id="score"></span></h1>
+      </div>
+
+      <div id="game-over">
+        <img src="./images/gameover.png" alt="Game Over" />
+        <br />
+        <h1 id="gameover-score"></h1>
+      </div>
+
+      <div id="win">
+        <img src="./images/win.png" alt="Win!" />
+        <br />
+        <h1 id="win-score"></h1>
+      </div>
+    </div>
     <script src="./script.js"></script>
   </body>
 </html>
