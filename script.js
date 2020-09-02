@@ -1,3 +1,6 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-return-assign */
+/* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-undef */
@@ -10,6 +13,12 @@ const scoreDisplay = document.getElementById("score");
 
 const squareSide = 20;
 let score = 0;
+
+// const eatingSound = new Audio("./sounds/eating.mp3");
+// const eatingGhostSound = new Audio("./sounds/eating-ghost.mp3");
+// const eatingPwrUpSound = new Audio("./sounds/eating-fruit.mp3");
+// const deadSound = new Audio("./sounds/miss.mp3");
+// const startSound = new Audio("./sounds/start-music.mp3");
 
 // 0 - wall
 // 1 - pacdot
@@ -57,90 +66,177 @@ class Pacman {
   constructor() {
     this.x = 13;
     this.y = 23;
+    this.pacLeftImg = new Image();
+    this.pacLeftImg.src = "./images/pac-left.png";
+    this.pacRightImg = new Image();
+    this.pacRightImg.src = "./images/pac-right.png";
+    this.pacUpImg = new Image();
+    this.pacUpImg.src = "./images/pac-up.png";
+    this.pacDownImg = new Image();
+    this.pacDownImg.src = "./images/pac-down.png";
+    this.direction = "left";
   }
 
   eatDot() {
+    // eatingSound.play();
     score += 10;
   }
 
+  eatPwrUp() {
+    // eatingPwrUpSound.play();
+    score += 50;
+
+    ghosts.forEach((ghost) => {
+      ghost.isScared = true;
+    });
+    setTimeout(() => {
+      ghosts.forEach((ghost) => {
+        ghost.isScared = false;
+      });
+    }, 10000);
+  }
+
+  eatGhost(ghostId) {
+    // eatingGhostSound.play();
+    score += 200;
+    ghosts[ghostId].isScared = false;
+    grid[ghosts[ghostId].y][ghosts[ghostId].x] = ghosts[ghostId].contentOfSquare;
+    ghosts[ghostId].contentOfSquare = 2;
+    ghosts[ghostId].x = ghosts[ghostId].startX;
+    ghosts[ghostId].y = ghosts[ghostId].startY;
+    grid[ghosts[ghostId].y][ghosts[ghostId].x] = 5;
+  }
+
   moveLeft() {
+    this.direction = "left";
+    if (this.y === 14 && this.x === 0) {
+      this.x = 27;
+      grid[14][0] = 2;
+      grid[this.y][this.x] = 4;
+      return;
+    }
     const futureX = this.x - 1;
     if (futureX < 0) {
       return;
     }
     if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 9)) {
       if (grid[this.y][futureX] === 5) {
-        gameOver();
+        const ghostId = ghosts.findIndex((ghost) => ghost.x === futureX && ghost.y === this.y);
+        if (!ghosts[ghostId].isScared) {
+          gameOver();
+        } else {
+          this.eatGhost(ghostId);
+        }
       }
       grid[this.y][this.x] = 2;
       this.x = futureX;
       if (grid[this.y][this.x] === 1) {
         this.eatDot();
+      }
+      if (grid[this.y][this.x] === 3) {
+        this.eatPwrUp();
       }
       grid[this.y][this.x] = 4;
     }
   }
 
   moveRight() {
+    this.direction = "right";
+    if (this.y === 14 && this.x === 27) {
+      this.x = 0;
+      grid[14][27] = 2;
+      grid[this.y][this.x] = 4;
+      return;
+    }
     const futureX = this.x + 1;
     if (futureX >= 28) {
       return;
     }
     if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 9)) {
       if (grid[this.y][futureX] === 5) {
-        gameOver();
+        const ghostId = ghosts.findIndex((ghost) => ghost.x === futureX && ghost.y === this.y);
+        if (!ghosts[ghostId].isScared) {
+          gameOver();
+        } else {
+          this.eatGhost(ghostId);
+        }
       }
       grid[this.y][this.x] = 2;
       this.x = futureX;
       if (grid[this.y][this.x] === 1) {
         this.eatDot();
       }
+      if (grid[this.y][this.x] === 3) {
+        this.eatPwrUp();
+      }
       grid[this.y][this.x] = 4;
     }
   }
 
   moveUp() {
+    this.direction = "up";
     const futureY = this.y - 1;
     if (futureY < 0) {
       return;
     }
     if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 9)) {
       if (grid[futureY][this.x] === 5) {
-        gameOver();
+        const ghostId = ghosts.findIndex((ghost) => ghost.x === this.x && ghost.y === futureY);
+        if (!ghosts[ghostId].isScared) {
+          gameOver();
+        } else {
+          this.eatGhost(ghostId);
+        }
       }
       grid[this.y][this.x] = 2;
       this.y = futureY;
       if (grid[this.y][this.x] === 1) {
         this.eatDot();
+      }
+      if (grid[this.y][this.x] === 3) {
+        this.eatPwrUp();
       }
       grid[this.y][this.x] = 4;
     }
   }
 
   moveDown() {
+    this.direction = "down";
     const futureY = this.y + 1;
     if (futureY >= 31) {
       return;
     }
     if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 9)) {
       if (grid[futureY][this.x] === 5) {
-        gameOver();
+        const ghostId = ghosts.findIndex((ghost) => ghost.x === this.x && ghost.y === futureY);
+        if (!ghosts[ghostId].isScared) {
+          gameOver();
+        } else {
+          this.eatGhost(ghostId);
+        }
       }
       grid[this.y][this.x] = 2;
       this.y = futureY;
       if (grid[this.y][this.x] === 1) {
         this.eatDot();
       }
+      if (grid[this.y][this.x] === 3) {
+        this.eatPwrUp();
+      }
       grid[this.y][this.x] = 4;
     }
   }
 
   draw() {
-    ctx.beginPath();
-    ctx.arc(this.x * squareSide + 10, this.y * squareSide + 10, 10, 0, Math.PI * 2);
-    ctx.fillStyle = "gold";
-    ctx.fill();
-    ctx.closePath();
+    if (this.direction === "left") {
+      ctx.drawImage(this.pacLeftImg, this.x * squareSide, this.y * squareSide, 20, 20);
+    } else if (this.direction === "right") {
+      ctx.drawImage(this.pacRightImg, this.x * squareSide, this.y * squareSide, 20, 20);
+    } else if (this.direction === "up") {
+      ctx.drawImage(this.pacUpImg, this.x * squareSide, this.y * squareSide, 20, 20);
+    } else if (this.direction === "down") {
+      ctx.drawImage(this.pacDownImg, this.x * squareSide, this.y * squareSide, 20, 20);
+    }
   }
 }
 
@@ -163,13 +259,21 @@ class Ghost {
   }
 
   moveLeft() {
+    if (this.y === 14 && this.x === 0) {
+      this.x = 27;
+      grid[14][0] = 2;
+      grid[this.y][this.x] = 4;
+      return;
+    }
     const futureX = this.x - 1;
     if (futureX < 0) {
       return;
     }
     if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 5)) {
       if (grid[this.y][futureX] === 4) {
-        gameOver();
+        if (!this.isScared) {
+          gameOver();
+        }
       }
       grid[this.y][this.x] = this.contentOfSquare;
       this.contentOfSquare = grid[this.y][futureX];
@@ -179,13 +283,21 @@ class Ghost {
   }
 
   moveRight() {
+    if (this.y === 14 && this.x === 27) {
+      this.x = 0;
+      grid[14][27] = 2;
+      grid[this.y][this.x] = 4;
+      return;
+    }
     const futureX = this.x + 1;
     if (futureX >= 28) {
       return;
     }
     if (!(grid[this.y][futureX] === 0) && !(grid[this.y][futureX] === 5)) {
       if (grid[this.y][futureX] === 4) {
-        gameOver();
+        if (!this.isScared) {
+          gameOver();
+        }
       }
       grid[this.y][this.x] = this.contentOfSquare;
       this.contentOfSquare = grid[this.y][futureX];
@@ -201,7 +313,9 @@ class Ghost {
     }
     if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 5)) {
       if (grid[futureY][this.x] === 4) {
-        gameOver();
+        if (!this.isScared) {
+          gameOver();
+        }
       }
       grid[this.y][this.x] = this.contentOfSquare;
       this.contentOfSquare = grid[futureY][this.x];
@@ -217,7 +331,9 @@ class Ghost {
     }
     if (!(grid[futureY][this.x] === 0) && !(grid[futureY][this.x] === 5)) {
       if (grid[futureY][this.x] === 4) {
-        gameOver();
+        if (!this.isScared) {
+          gameOver();
+        }
       }
       grid[this.y][this.x] = this.contentOfSquare;
       this.contentOfSquare = grid[futureY][this.x];
@@ -251,30 +367,37 @@ class Ghost {
           break;
       }
 
-      // if the ghost is currently scared
-      if (this.isScared) {
-        // this.turnScared();
-      }
-
       draw();
-
-      // if the ghost is currently scared and pacman is on it
-
-      // checkForGameOver()
     }, this.speed);
   }
 
-  draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x * squareSide + 2, this.y * squareSide + 2, 16, 16);
+  draw(index) {
+    if (this.isScared) {
+      ctx.drawImage(scaredImg, this.x * squareSide, this.y * squareSide, 20, 20);
+    } else {
+      ctx.drawImage(ghostsImg[index], this.x * squareSide, this.y * squareSide, 20, 20);
+    }
   }
 }
 
+const blinkyImg = new Image();
+blinkyImg.src = "./images/blinky.png";
+const pinkyImg = new Image();
+pinkyImg.src = "./images/pinky.png";
+const inkyImg = new Image();
+inkyImg.src = "./images/inky.png";
+const clydeImg = new Image();
+clydeImg.src = "./images/clyde.png";
+const scaredImg = new Image();
+scaredImg.src = "./images/scared.png";
+
+const ghostsImg = [blinkyImg, pinkyImg, inkyImg, clydeImg];
+
 const ghosts = [
-  new Ghost("blinky", 13, 11, 170, "red", 2),
-  new Ghost("pinky", 13, 13, 180, "hotpink", 9),
-  new Ghost("inky", 12, 13, 230, "cyan", 9),
-  new Ghost("clyde", 14, 13, 300, "sandybrown", 9),
+  new Ghost("blinky", 13, 11, 140, "red", 2),
+  new Ghost("pinky", 13, 13, 160, "hotpink", 9),
+  new Ghost("inky", 12, 13, 180, "cyan", 9),
+  new Ghost("clyde", 14, 13, 200, "sandybrown", 9),
 ];
 
 function clear() {
@@ -321,7 +444,7 @@ function draw() {
           break;
 
         case 5:
-          ghosts.forEach((ghost) => ghost.draw());
+          ghosts.forEach((ghost, index) => ghost.draw(index));
           break;
 
         default:
@@ -364,6 +487,7 @@ function victory() {
 }
 
 function gameOver() {
+  // deadSound.play();
   ghosts.forEach((ghost) => clearInterval(ghost.timerId));
   document.getElementById("gameover-score").innerText = `Your final score is ${score}`;
   clear();
@@ -377,6 +501,7 @@ function gameOver() {
 
 function startGame() {
   draw();
+  // startSound.play();
   ghosts.forEach((ghost) => ghost.move());
 }
 
