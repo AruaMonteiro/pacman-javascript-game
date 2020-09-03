@@ -18,8 +18,11 @@ const eatingGhostSound = new Audio("./sounds/eating-ghost.mp3");
 const eatingPwrUpSound = new Audio("./sounds/eating-fruit.mp3");
 const deadSound = new Audio("./sounds/miss.mp3");
 const backgroundMusic = new Audio("./sounds/background.mp3");
-backgroundMusic.volume = 0.1;
+backgroundMusic.volume = 0.03;
 backgroundMusic.loop = true;
+eatingGhostSound.volume = 0.04;
+eatingPwrUpSound.volume = 0.04;
+deadSound.volume = 0.04;
 
 // 0 - wall
 // 1 - pacdot
