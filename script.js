@@ -14,11 +14,12 @@ const scoreDisplay = document.getElementById("score");
 const squareSide = 20;
 let score = 0;
 
-// const eatingSound = new Audio("./sounds/eating.mp3");
-// const eatingGhostSound = new Audio("./sounds/eating-ghost.mp3");
-// const eatingPwrUpSound = new Audio("./sounds/eating-fruit.mp3");
-// const deadSound = new Audio("./sounds/miss.mp3");
-// const startSound = new Audio("./sounds/start-music.mp3");
+const eatingGhostSound = new Audio("./sounds/eating-ghost.mp3");
+const eatingPwrUpSound = new Audio("./sounds/eating-fruit.mp3");
+const deadSound = new Audio("./sounds/miss.mp3");
+const backgroundMusic = new Audio("./sounds/background.mp3");
+backgroundMusic.volume = 0.1;
+backgroundMusic.loop = true;
 
 // 0 - wall
 // 1 - pacdot
@@ -78,12 +79,11 @@ class Pacman {
   }
 
   eatDot() {
-    // eatingSound.play();
     score += 10;
   }
 
   eatPwrUp() {
-    // eatingPwrUpSound.play();
+    eatingPwrUpSound.play();
     score += 50;
 
     ghosts.forEach((ghost) => {
@@ -97,7 +97,7 @@ class Pacman {
   }
 
   eatGhost(ghostId) {
-    // eatingGhostSound.play();
+    eatingGhostSound.play();
     score += 200;
     ghosts[ghostId].isScared = false;
     grid[ghosts[ghostId].y][ghosts[ghostId].x] = ghosts[ghostId].contentOfSquare;
@@ -487,7 +487,8 @@ function victory() {
 }
 
 function gameOver() {
-  // deadSound.play();
+  backgroundMusic.pause();
+  deadSound.play();
   ghosts.forEach((ghost) => clearInterval(ghost.timerId));
   document.getElementById("gameover-score").innerText = `Your final score is ${score}`;
   clear();
@@ -501,7 +502,7 @@ function gameOver() {
 
 function startGame() {
   draw();
-  // startSound.play();
+  backgroundMusic.play();
   ghosts.forEach((ghost) => ghost.move());
 }
 
