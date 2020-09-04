@@ -1,6 +1,6 @@
 <!-- PROJECT LOGO -->
 <p align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
+  <a href="https://github.com/AruaMonteiro/pacman-javascript-game">
     <img src="images/logo.png" alt="Logo" width="250" >
   </a>
 
