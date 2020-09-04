@@ -533,7 +533,8 @@ window.onload = () => {
           player.moveRight();
           draw();
           break;
-        case 40: // right arrow
+        case 40: // down arrow
+          e.preventDefault();
           player.moveDown();
           draw();
           break;
